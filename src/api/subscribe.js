@@ -4,14 +4,26 @@ const instance = axios.create({
   baseURL: "http://localhost:8080/api/",
 });
 
-export const create = async (data) => {
-  return await instance.post("create", data);
+export const countSub = async (channelCode) => {
+  return await instance.get(`sub/${channelCode}/count`);
 };
 
-export const remove = async (date) => {
-  return await instance.delete("remove", data);
+const authorize = axios.create({
+  baseURL: "http://localhost:8080/api/private/",
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
+});
+
+// http://localhost:8080/api/private/sub/2
+export const getSub = async (channelCode) => {
+  return await authorize.get(`sub/${channelCode}`);
 };
 
-export const count = async (data) => {
-  return await instance.get("count", data);
+export const addSub = async (data) => {
+  return await authorize.post("sub", data);
+};
+
+export const removeSub = async (subCode) => {
+  return await authorize.delete(`sub/${subCode}`);
 };
