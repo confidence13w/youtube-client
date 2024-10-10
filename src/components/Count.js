@@ -23,7 +23,7 @@ const Count = () => {
   const dispatch = useDispatch();
 
   // useSelector : 리덕스 스토어에서 상태를 가져오는 훅
-  const count = useSelector((state) => state.count);
+  const count = useSelector((state) => state.count.count);
 
   return (
     <StyledDiv>
