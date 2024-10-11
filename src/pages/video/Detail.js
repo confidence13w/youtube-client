@@ -1,5 +1,5 @@
 import "../../assets/detail.css";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer } from "react";
 import { useParams } from "react-router-dom";
 import {
   initState as videoState,
@@ -16,7 +16,8 @@ import {
 } from "../../store/subscribeSlice";
 import { createComment, fetchComments } from "../../store/commentSlice";
 import { useAuth } from "../../contexts/AuthContext";
-import { addComment } from "../../api/comment";
+import { useState } from "react";
+import Comment from "../../components/Comment";
 
 const Detail = () => {
   const { videoCode } = useParams();
@@ -25,12 +26,12 @@ const Detail = () => {
   const [isComment, setIsComment] = useState(false);
   const [newComment, setNewComment] = useState({
     commentText: "",
-    vicdeoCode: videoCode,
+    videoCode: videoCode,
     id: id,
   });
 
   // 리듀서 방식 - 리덕스 툴킷 사용하는 방식으로 변경해보셔도 괜찮아요!
-  // 실제 프로젝트에서는 하나로 통일해주세요! -> 만약 쓴다면 리덕스 툴킷 사용!
+  // 실제 프로젝트에서는 하나로 통일해주세요! -> 만약 쓰신다면 리덕스 툴킷 사용!
   const [state, videoDispatch] = useReducer(videoReducer, videoState);
   const { video, videos } = state;
 
@@ -44,8 +45,7 @@ const Detail = () => {
 
   const handleSub = () => {
     if (isSub) {
-      // 구독중 -> 구독 취소
-      dispatch(unsubscribe(sub?.subCode));
+      dispatch(unsubscribe(sub.subCode));
     } else {
       // 구독 -> 구독
       dispatch(subscribe({ channelCode: video.channel.channelCode }));
@@ -72,7 +72,7 @@ const Detail = () => {
         dispatch(fetchSub(video.channel.channelCode));
       }
     }
-  }, [video, token, handleSub]);
+  }, [video, token]);
 
   return (
     <main className="detail">
@@ -109,16 +109,11 @@ const Detail = () => {
           )}
           <div className="comment-list">
             {comments.map((comment) => (
-              <div className="comment-content">
-                <h4>{comment.id}</h4>
-                <p>{comment.commentText}</p>
-                <button>답글</button>
-                <input type="text" placeholder="답글 추가.." />
-                <div className="reply-add-status">
-                  <button>취소</button>
-                  <button>답글</button>
-                </div>
-              </div>
+              <Comment
+                comment={comment}
+                videoCode={videoCode}
+                key={comment.commentCode}
+              />
             ))}
           </div>
         </div>

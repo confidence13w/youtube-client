@@ -1,6 +1,7 @@
 import { useState, useReducer } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
+import { increase, decrease } from "../store/countSlice";
 
 const StyledDiv = styled.div`
   margin: 20px;
@@ -28,8 +29,8 @@ const Count = () => {
   return (
     <StyledDiv>
       <h1>Count : {count}</h1>
-      <button onClick={() => dispatch({ type: "INCREASE" })}>+</button>
-      <button onClick={() => dispatch({ type: "DECREASE" })}>-</button>
+      <button onClick={() => dispatch(increase())}>+</button>
+      <button onClick={() => dispatch(decrease())}>-</button>
     </StyledDiv>
   );
 };

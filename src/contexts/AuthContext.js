@@ -1,5 +1,5 @@
 /*
-    Context : 문맥이라는 뜻, 리액트에서 같은 문맥 아래에 있는 컴포넌트 그룹에 데이터를 공급하는 기능. Context를 이용하면 Props를 전달하지 않고도 컴폰전트 전역에 데이터를 공급할 수 있다.
+    Context : 문맥이라는 뜻. 리액트에서 같은 문맥 아래에 있는 컴포넌트 그룹에 데이터를 공급하는 기능. Context를 이용하면 Props를 전달하지 않고도 컴포넌트 전역에 데이터를 공급할 수 있다.
     ContextAPI : Context를 만들고 다루는 리액트 기능
 */
 import { createContext, useState, useContext } from "react";
@@ -26,8 +26,8 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("id");
-    setToken(null);
     setId(null);
+    setToken(null);
   };
 
   return (

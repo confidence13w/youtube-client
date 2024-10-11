@@ -36,20 +36,22 @@ export const fetchSub = createAsyncThunk(
 const subscribeSlice = createSlice({
   name: "subscribe",
   initialState: {
-    count: 0,
-    isSub: false,
-    sub: null,
+    count: 0, // 구독자 수
+    isSub: false, // 구독 체크 여부
+    sub: null, // 구독 정보
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(subscribe.fulfilled, (state) => {
+      .addCase(subscribe.fulfilled, (state, action) => {
+        state.sub = action.payload;
         state.isSub = true;
         state.count += 1; // state.count = state.count + 1;
       })
       .addCase(unsubscribe.fulfilled, (state) => {
         state.isSub = false;
         state.count -= 1;
+        state.sub = null;
       })
       .addCase(subCount.fulfilled, (state, action) => {
         state.count = action.payload;

@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+// createSlice로 리듀서 정의
 const countSlice = createSlice({
   name: "count", // 슬라이스명
   initialState: { count: 0 }, // 초기 상태
