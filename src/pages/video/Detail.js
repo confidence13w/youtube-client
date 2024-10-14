@@ -19,6 +19,11 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useState } from "react";
 import Comment from "../../components/Comment";
 
+// 리액트 쿼리(React Query)
+// 서버에 데이터에 특화되어 비동기 작업을 훨씬 쉽게 처리할 수 있는 라이브러리
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { addComment as addCommentAPI, viewComments } from "../../api/comment";
+
 const Detail = () => {
   const { videoCode } = useParams();
   const { token, id } = useAuth();
@@ -41,7 +46,29 @@ const Detail = () => {
   const isSub = useSelector((state) => state.subscribe.isSub);
   const count = useSelector((state) => state.subscribe.count);
   const sub = useSelector((state) => state.subscribe.sub);
-  const comments = useSelector((state) => state.comment.comments);
+
+  // 리액트 쿼리 방식 -> 필수는 아님! 굳이 사용할 필요는 없음
+  // queryClient : React Query의 캐시를 제어
+  const queryClient = useQueryClient();
+
+  // 댓글 목록
+  const {
+    data: comments,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["comments", videoCode],
+    queryFn: () => viewComments(videoCode),
+    refetchInterval: 1000, // 1000 = 1초 -> 해당 시간마다 데이터 갱신하여 실시간처럼 처리
+  });
+
+  // 댓글 추가
+  const addMutation = useMutation({
+    mutationFn: addCommentAPI,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", videoCode] });
+    },
+  });
 
   const handleSub = () => {
     if (isSub) {
@@ -54,7 +81,7 @@ const Detail = () => {
 
   // 댓글 추가
   const addComment = () => {
-    dispatch(createComment(newComment));
+    addMutation.mutate(newComment);
     setIsComment(false);
     setNewComment({ ...newComment, commentText: "" });
   };
@@ -62,7 +89,6 @@ const Detail = () => {
   useEffect(() => {
     fetchVideo(videoDispatch, videoCode);
     fetchVideos(videoDispatch, 1, "");
-    dispatch(fetchComments(videoCode));
   }, []);
 
   useEffect(() => {
@@ -73,6 +99,11 @@ const Detail = () => {
       }
     }
   }, [video, token]);
+
+  // 데이터 로딩 중일 때 처리
+  if (isLoading) return <>로딩중..</>;
+  // 에러 발생 했을 때 처리
+  if (error) return <>에러 발생..</>;
 
   return (
     <main className="detail">
@@ -108,7 +139,7 @@ const Detail = () => {
             </div>
           )}
           <div className="comment-list">
-            {comments.map((comment) => (
+            {comments.data.map((comment) => (
               <Comment
                 comment={comment}
                 videoCode={videoCode}
